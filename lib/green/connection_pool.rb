@@ -31,18 +31,13 @@ class Green
         yield conn
       rescue => e
         if @disconnect_class && e.is_a?(@disconnect_class)
-          disconnected = true
+          conn = nil
           @available << @new_block.call
-        else
-          raise
         end
+        raise
       ensure
-        if disconnected
-          try_next
-        else
-          release conn
-          try_next
-        end
+        release conn if conn
+        try_next
       end
     end
 
